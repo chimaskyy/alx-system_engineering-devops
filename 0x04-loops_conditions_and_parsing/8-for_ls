@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# This bash script displays the content of the current
+#+ working directory
+
+for content in *
+do
+	echo "$content" | cut -d "-" -f2-
+done 
