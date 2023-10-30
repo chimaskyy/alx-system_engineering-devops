@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# parse log file
+# display it's IP and HTTP code
+
+awk '{pirint $1,$9}' apache-access.log
