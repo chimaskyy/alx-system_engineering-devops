@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# dispays content of /etc/passwd
+
+while IFS=":" read -r USRNAME PASSWD USRID GRPID USRINFO HOMEDIR COMMANDSHELL
+do
+	echo "The user $USRNAME is part of the $GRPID gang, lives in $HOMEDIR and rides $COMMANDSHELL. $USRID's place is protected by the passcode $PASSWD, more info about the user here: $USRINFO"
+done < /etc/passwd
