@@ -6,11 +6,8 @@ IdentityFIle ~/.ssh/school
 PasswordAuthentication no
 EOF
 
-#file path and permission
-$file_path = '/etc/ssh/ssh_config'
-
 #manage file
-file { $file_path:
+file { '/etc/ssh/ssh_config':
   ensure  => present,
   content => $file_content,
 }
