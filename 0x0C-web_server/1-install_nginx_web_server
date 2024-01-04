@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Installs and configures an Nginx web server
+
+if dpkg -l | grep -q "nginx"; then
+    echo "Nginx is already installed."
+else
+    if ! sudo apt-get update; then
+        echo "Failed to update package lists. Exiting."
+        exit 1
+    fi
+
+    if ! sudo apt-get -y install nginx; then
+        echo "Failed to install Nginx. Exiting."
+        exit 1
+    fi
+fi
+
+if ! sudo ufw allow "Nginx HTTP"; then
+    echo "Failed to allow Nginx HTTP traffic in the firewall."
+fi
+echo "Hello World!" | sudo tee /var/www/html/index.nginx-debian.html > /dev/null
+service nginx start
