@@ -1,1 +1,15 @@
+Link to design image
+..............................
 https://imgbox.com/O1vjcPbx
+..............................
+
+- The new design is composed of two servers. The servers are working based on a Active-Active set up, their configuration must be identical. The load is going to be managed through a load-balancer, which distributes the queries according to a Robin-Round algorithm.
+- The load-balancer is using a Round Robin algorithm distribution. Meaning the queries requested are distributed to every server sequentially one after another. And after sending the request to the last server, the algorithm stars from the first server. The goal is to evenly distribute requests among all servers.Each server gets an equal share of requests over time.
+- The load-balancer is enabling an Active-Active set up.
+The Active-Active cluster is made up of at least two nodes, both activaley running the same type of services at the same time. This helps to achieve load balancing by distributing tasks to different servers in order to prevent overload. This improves service and process time.
+In an active-passive setup, not all nodes are going to be simutanously active. The inactive node are passively waiting to be active as backup in case the active server is disconnected or unable to serve. The passive node should have the same configuration as the active one.
+
+### Issues with distributed web infrastructure
+- SPOF: If the load balancer or any of the configuration fails, the whole system fails and website becomes inaccessible.
+- No firewalls which makes the systm vulunerable to attackers. Also no HTTPS, so data transmitted between client nad the server is not protected/encrypted
+- No monitoring system: Makes it difficult to diagonise issues and measure server performance.

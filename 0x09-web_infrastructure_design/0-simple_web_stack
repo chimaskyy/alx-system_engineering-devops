@@ -1,1 +1,17 @@
+Link to design image
+............................
 https://imgbox.com/qecL4gAo
+............................
+
+- A server is a system or program that provides that provide services, resources or functionality to other computers, known as clients within a network
+- Domain Name System(DNS) translates human-readable domain names into IP addresses. Maps evry domain name request to its corresponding IP address.
+- www.foobar.com is CNAME(canoical name) record pointing to the A record of foobar.com run the command `dig A www.foobar.com`
+- Web server(Nginx) handles request from web browsers(http request) and respond by delivering static content (html files), and forwarding dynamic contents to tha application sever.
+- Application server communicate with the web server to process dynamic contents requested. It executes the application code and generate dynamic content.
+- Database(MySQL) stores application information for retrieving and updating application information.
+- The server is using the HTTP protocol to communicat with the computer for the transfer of resources and data. When the client requests the website, the browser sends an http request to the server and the server responds to the requests received.
+
+### Issues with the design
+- SPOF(SIngle point of Failure): The entire system is dependent on one server, if it fails the whole system breakes and becomes inaccessible.
+- Maintenance: The whole system has to be shut down, while the maintenance is done. Then, client requests cannot be attended to during this period.
+- Scalability: This design may strugle to handle high number of incoming traffic which could lead to possible breakdown of wbpage and client request.
