@@ -16,12 +16,15 @@ else
     fi
 fi
 
+# Allow Nginx HTTP traffic in the firewall using UFW
 if ! sudo ufw allow "Nginx HTTP"; then
     echo "Failed to allow Nginx HTTP traffic in the firewall."
 fi
 
+# Create a Hello World index page
 echo "Hello World!" | sudo tee /var/www/html/index.nginx-debian.html > /dev/null
 
+# Check if Nginx configuration file exists
 if [ -e /etc/nginx/sites-available/default ]; then
 	    # Backup existing configuration
     if ! sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak; then
@@ -32,13 +35,17 @@ if [ -e /etc/nginx/sites-available/default ]; then
 
 fi
 
+# Add a redirect rule to Nginx configuration
 sudo sed -i '/listen 80 default_server/a rewrite ^/redirect_me https://github.com/chimaskyy permanent; ' /etc/nginx/sites-available/default
 
+# Create a custom 404 page
 echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html > /dev/null
 
+# Modify Nginx configuration to use custom 404 page
 replace="listen 80 default_server;\n\terror_page 404 \/404.html;\n\tlocation = \/404.html {\n\t\troot \/var\/www\/html;\n\t\tinternal;\n\t}"
 sudo sed -i "s/listen 80 default_server;/$replace/" /etc/nginx/sites-available/default
 
+#Apply changes
 sudo service nginx restart
 
 echo "Nginx configured successfully."
