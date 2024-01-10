@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 # This script install and configure HAProxy on lb-01 server
 # Configures HAProxy to send traffic to web-01 and web-02 servers
 # ROundrobin algorithm is used to distribute request
