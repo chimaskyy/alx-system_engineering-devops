@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# install nginx if not already installed
+sudo apt-get -y nginx
+sudo service nginx restart
+echo "" | sudo tee /run/nginx.pid
