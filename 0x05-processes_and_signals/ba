@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+#fil="hello.py"
+#echo "hello" > $fil
+
+file="/tmp/test.txt"
+touch $file
+echo "Adding first line" > $file
+echo "Adding first line replaced" > $file
+echo "Appending second line " >> $file
+echo "Appending third line" >> $file
+cat $file

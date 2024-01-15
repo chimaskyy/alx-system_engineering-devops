@@ -26,6 +26,9 @@ backend back
     server web2 54.237.39.190:80 check
 EOF
 
+# enable haproxy to be started by init script
+echo "ENABLED=1" | sudo tee -a /etc/default/haproxy
+
 if sudo service haproxy restart; then
 	echo "Configuratuin succesful"
 else
