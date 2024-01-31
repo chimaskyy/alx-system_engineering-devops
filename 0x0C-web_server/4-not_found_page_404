@@ -1,51 +1,69 @@
 #!/usr/bin/env bash
 # Installs and configures an Nginx web server
 # configure nginx to redirect /redirect_me to another page
+# add an error page
 
 if dpkg -l | grep -q "nginx"; then
     echo "Nginx is already installed."
 else
     if ! sudo apt-get update; then
-	echo "Failed to update package lists. Exiting."
-	exit 1
+        echo "Failed to update package lists. Exiting."
+        exit 1
     fi
 
     if ! sudo apt-get -y install nginx; then
         echo "Failed to install Nginx. Exiting."
-	exit 1
+        exit 1
     fi
 fi
 
-# Allow Nginx HTTP traffic in the firewall using UFW
 if ! sudo ufw allow "Nginx HTTP"; then
     echo "Failed to allow Nginx HTTP traffic in the firewall."
 fi
 
-# Create a Hello World index page
-echo "Hello World!" | sudo tee /var/www/html/index.nginx-debian.html > /dev/null
-
-# Check if Nginx configuration file exists
-if [ -e /etc/nginx/sites-available/default ]; then
-	    # Backup existing configuration
-    if ! sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak; then
-	 echo "Failed to backup the Nginx configuration. Continuing without backup."
-    else 
-	 echo "Nginx configuration backed up successfully."
-    fi
-
+if [ ! -e /var/www/html/ ]; then
+	mkdir -p /var/www/html/
 fi
 
-# Add a redirect rule to Nginx configuration
-sudo sed -i '/listen 80 default_server/a rewrite ^/redirect_me https://github.com/chimaskyy permanent; ' /etc/nginx/sites-available/default
+echo "Hello World!" | sudo tee /var/www/html/index.html > /dev/null
 
-# Create a custom 404 page
-echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html > /dev/null
+# Create a 404 HTML page
+echo "Ceci n'est pas une page" | tee /var/www/html/404.html > /dev/null
 
-# Modify Nginx configuration to use custom 404 page
-replace="listen 80 default_server;\n\terror_page 404 \/404.html;\n\tlocation = \/404.html {\n\t\troot \/var\/www\/html;\n\t\tinternal;\n\t}"
-sudo sed -i "s/listen 80 default_server;/$replace/" /etc/nginx/sites-available/default
+nginx_config="/etc/nginx/sites-available/default"
+nginx_config_backup="$nginx_config.bak"
 
-#Apply changes
+if [ ! -e "$nginx_config_backup" ]; then
+	cp "$nginx_config" "$nginx_config_backup"
+fi
+
+redirect_to="https://github.com/chimaskyy"
+
+# Update the Nginx configuration to add location block for redirect
+sudo tee -a "$nginx_config" > /dev/null << EOF
+server {
+	listen 80;
+	listen [::]:80;
+	
+	server_name techinit.tech www.techinit.com;
+	root /var/www/html;
+	index index.html index.htm;
+	
+	location /redirect_me {
+	     return 301 $redirect_to;
+	}
+
+	add_header X-Served-By \$hostname;
+
+	
+	error_page 404 /404.html;
+    	location /404 {
+        root /var/www/html;
+        internal;
+    }
+
+}
+EOF
+
+# restart to apply changes
 sudo service nginx restart
-
-echo "Nginx configured successfully."

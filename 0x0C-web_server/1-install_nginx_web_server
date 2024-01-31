@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # Installs and configures an Nginx web server
 
+# Check if Nginx is already installed
 if dpkg -l | grep -q "nginx"; then
     echo "Nginx is already installed."
 else
+    # Update package lists and install Nginx
     if ! sudo apt-get update; then
         echo "Failed to update package lists. Exiting."
         exit 1
@@ -15,8 +17,20 @@ else
     fi
 fi
 
+# Allow Nginx HTTP traffic in the firewall
 if ! sudo ufw allow "Nginx HTTP"; then
     echo "Failed to allow Nginx HTTP traffic in the firewall."
 fi
-echo "Hello World!" | sudo tee /var/www/html/index.nginx-debian.html > /dev/null
-service nginx start
+# make a backup of the default config gile
+if [ ! -e /etc/nginx/sites-available/default.bak ]; then
+	cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
+fi
+# Create a simple index file in the default web root directory
+echo "Hello World!" | sudo tee /var/www/html/index.html > /dev/null
+
+# Start the Nginx service
+if ! sudo service nginx start; then
+	echo "Failed to start Nginx. Exiting."
+	    exit 1
+fi
+echo "Installation and configuration successfull"

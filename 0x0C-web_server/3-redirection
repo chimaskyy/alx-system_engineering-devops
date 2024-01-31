@@ -21,10 +21,17 @@ if ! sudo ufw allow "Nginx HTTP"; then
 fi
 
 
-echo "Hello World!" | sudo tee /var/www/html/index.nginx-debian.html > /dev/null
+echo "Hello World!" | sudo tee /var/www/html/index.html > /dev/null
+
+if [ ! -e /etc/nginx/sites-available/default.bak ]; then
+	cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
+fi
 
 redirect_to="https://github.com/chimaskyy"
-printf '%s\n' "server {
+
+# Update the Nginx configuration to perform a redirect
+sudo tee -a /etc/nginx/sites-available/default > /dev/null << EOF
+server {
 	listen 80;
 	listen [::]:80;
 	
@@ -35,7 +42,7 @@ printf '%s\n' "server {
 	location /redirect_me {
 	     return 301 $redirect_to;
 	}
-}" > /etc/nginx/sites-available/default
-
+}
+EOF
 
 sudo service nginx restart
