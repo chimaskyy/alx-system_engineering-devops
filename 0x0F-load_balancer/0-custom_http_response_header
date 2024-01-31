@@ -38,7 +38,8 @@ fi
 
 redirect_to="https://github.com/chimaskyy"
 
-sudo sed -i '/listen 80 default_server/a rewrite ^/redirect_me https://github.com/chimaskyy permanent; ' /etc/nginx/sites-available/default
+# add custom header
+sudo sed -i '/listen 80 default_server/a add_header X-Served-By \$hostname;\n\trewrite ^/redirect_me https://github.com/chimaskyy permanent; ' /etc/nginx/sites-available/default
 
 # Create a 404 HTML page
 echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html > /dev/null
@@ -47,10 +48,6 @@ echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html > /dev/null
 replace="listen 80 default_server;\n\terror_page 404 \/404.html;\n\tlocation = \/404.html {\n\t\troot \/var\/www\/html;\n\t\tinternal;\n\t}"
 sudo sed -i "s/listen 80 default_server;/$replace/" /etc/nginx/sites-available/default
 
-# Add custom header to Nginx configuration
-sudo sed -i '/^\s*try_files \$uri \$uri\/ =404;/ {
-    s|^\s*try_files \$uri \$uri\/ =404;|&\n    add_header X-Served-By \$hostname;|
-}' /etc/nginx/sites-available/default
 # restart to apply changes
 sudo service nginx restart
 
