@@ -2,6 +2,7 @@
 # Installs and configures an Nginx web server
 # configure nginx to redirect /redirect_me to another page
 # add an error page
+# shellcheck disable=SC2154
 
 if dpkg -l | grep -q "nginx"; then
     echo "Nginx is already installed."
@@ -21,49 +22,55 @@ if ! sudo ufw allow "Nginx HTTP"; then
     echo "Failed to allow Nginx HTTP traffic in the firewall."
 fi
 
-if [ ! -e /var/www/html/ ]; then
-	mkdir -p /var/www/html/
-fi
+#if [ ! -e /var/www/html/ ]; then
+#	mkdir -p /var/www/html/
+#fi
 
 echo "Hello World!" | sudo tee /var/www/html/index.html > /dev/null
 
-# Create a 404 HTML page
-echo "Ceci n'est pas une page" | tee /var/www/html/404.html > /dev/null
 
 nginx_config="/etc/nginx/sites-available/default"
 nginx_config_backup="$nginx_config.bak"
 
 if [ ! -e "$nginx_config_backup" ]; then
-	cp "$nginx_config" "$nginx_config_backup"
+	sudo cp "$nginx_config" "$nginx_config_backup"
 fi
 
 redirect_to="https://github.com/chimaskyy"
 
+sudo sed -i '/listen 80 default_server/a rewrite ^/redirect_me https://github.com/chimaskyy permanent; ' /etc/nginx/sites-available/default
+
+# Create a 404 HTML page
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html > /dev/null
+
 # Update the Nginx configuration to add location block for redirect
-sudo tee -a "$nginx_config" > /dev/null << EOF
-server {
-	listen 80;
-	listen [::]:80;
-	
-	server_name techinit.tech www.techinit.com;
-	root /var/www/html;
-	index index.html index.htm;
-	
-	location /redirect_me {
-	     return 301 $redirect_to;
-	}
-
-	add_header X-Served-By \$hostname;
-
-	
-	error_page 404 /404.html;
-    	location /404 {
-        root /var/www/html;
-        internal;
-    }
-
-}
-EOF
+replace="listen 80 default_server;\n\terror_page 404 \/404.html;\n\tlocation = \/404.html {\n\t\troot \/var\/www\/html;\n\t\tinternal;\n\t}"
+sudo sed -i "s/listen 80 default_server;/$replace/" /etc/nginx/sites-available/default
 
 # restart to apply changes
 sudo service nginx restart
+
+#sudo tee -a "$nginx_config" > /dev/null << EOF
+#server {
+#	listen 80;
+#	listen [::]:80;
+#	
+#	server_name techinit.tech www.techinit.com;
+#	root /var/www/html;
+#	index index.html index.htm;
+#	
+#	location /redirect_me {
+#	     return 301 $redirect_to;
+#	}
+#
+#	add_header X-Served-By \$hostname;
+#
+#	
+#	error_page 404 /404.html;
+#   	location /404 {
+#        root /var/www/html;
+#       internal;
+#   }
+#
+#}
+#EOF

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Installs and configures an Nginx web server
 # configure nginx to redirect /redirect_me to another page
+# shellcheck disable=SC2154
 
 if dpkg -l | grep -q "nginx"; then
     echo "Nginx is already installed."
@@ -24,25 +25,29 @@ fi
 echo "Hello World!" | sudo tee /var/www/html/index.html > /dev/null
 
 if [ ! -e /etc/nginx/sites-available/default.bak ]; then
-	cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
+	sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
 fi
 
 redirect_to="https://github.com/chimaskyy"
 
 # Update the Nginx configuration to perform a redirect
-sudo tee -a /etc/nginx/sites-available/default > /dev/null << EOF
-server {
-	listen 80;
-	listen [::]:80;
-	
-	server_name techinit.tech www.techinit.com;
-	root /var/www/html;
-	index index.html index.htm;
-	
-	location /redirect_me {
-	     return 301 $redirect_to;
-	}
-}
-EOF
+sed -i '/listen 80 default_server/a rewrite ^/redirect_me https://github.com/chimaskyy permanent; ' /etc/nginx/sites-available/default
+
+sudo service nginx restart
+
+#sudo tee -a /etc/nginx/sites-available/default > /dev/null << EOF
+#server {
+#	listen 80;
+#	listen [::]:80;
+#	
+#	server_name techinit.tech www.techinit.com;
+#	root /var/www/html;
+#	index index.html index.htm;
+#	
+#	location /redirect_me {
+#	     return 301 $redirect_to;
+#	}
+#}
+#EOF
 
 sudo service nginx restart
