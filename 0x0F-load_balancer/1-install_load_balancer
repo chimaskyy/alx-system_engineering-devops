@@ -6,16 +6,19 @@
 
 
 CONFIG_FILE="/etc/haproxy/haproxy.cfg"
+BACKUP_FILE="${CONFIG_FILE}.bak"
 
 # backup config file
-sudo cp "$CONFIG_FILE" "CONFIG_FILE.bak"
+if [ ! -e "$BACKUP_FILE" ]; then
+	sudo cp "$CONFIG_FILE" "$BACKUP_FILE"
+fi
 
 # update and install HAProxy
 sudo apt-get -y update
 sudo apt-get install -y haproxy
 
 # Configure HAproxy so that it send traffic to web-01 and web-02
-sudo tee "$CONFIG_FILE" > /dev/null <<EOF
+sudo tee -a "$CONFIG_FILE" > /dev/null <<EOF
 frontend front
     bind *:80
     default_backend back
