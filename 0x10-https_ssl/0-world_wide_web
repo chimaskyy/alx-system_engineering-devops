@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# This script displays information about subdomains of a domain
+
+function info_subdomain {
+	local domain=$1
+	local subdomain=$2
+	local sub_domain="${subdomain}.${domain}"
+	local ip=$(dig "$sub_domain" | awk '/ANSWER SECTION/ { getline; print $5 }')
+	local record_type=$(dig "$sub_domain" | awk '/ANSWER SECTION/ { getline; print $4 }')
+	echo "The subdomain $subdomain is a $record_type record and points to $ip"
+}
+
+if [[ $# -gt 1 ]]
+then
+	info_subdomain "$1" "$2"
+elif [[ $# -eq 1 ]]
+then
+	 info_subdomain "$1" "www"
+	 info_subdomain "$1" "lb-01"
+	 info_subdomain "$1" "web-01"
+	 info_subdomain "$1" "web-02"
+fi
+
+# if the subdomain($2) is not passed, display information for all subdomain of the domain passed
+#       if [ -z "$subdomain" ]; then
+#               subdomain=("www" "lb-01" "web-01" "web-02")
+#       else
+#               subdomain=("$subdomain")
+#       fi
+
+#       # iterate all element of the subdomain array
+#       for sub_dom in "${subdomain[@]}"; do
+#               # use awk to match line containing 'ANSWER SECTION'
+#               record_type=$(dig "$sub_dom.$domain" | awk '/ANSWER SECTION/ { getline; print $4 }')
+#               destination=$(dig "$sub_dom.$domain" | awk '/ANSWER SECTION/ { getline; print $5 }')
+#       echo "The subdomain $sub_dom is a $record_type record and points to $destination"
+#       done
+
+#}
