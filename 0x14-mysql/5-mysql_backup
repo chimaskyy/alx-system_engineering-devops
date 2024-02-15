@@ -5,7 +5,7 @@ dumped_here='backup.sql'
 archived="$(date +'%d-%m-%Y').tar.gz"
 
 #dump database 
-mysqldump -uroot -p"$1" --all-databases > "$dumped_here"
+sudo mysqldump -u root -p"$1" --all-databases > "$dumped_here"
 if [ $? -ne 0 ]; then
     echo "dumping failed"
     exit 1
