@@ -12,7 +12,7 @@ if [ $? -ne 0 ]; then
 fi
 
 #compress archive
-tar -czf "$archived" "$dumped_here"
+tar -czvf "$archived" "$dumped_here"
 if [ $? -ne 0 ]; then
     echo "Compression not succesfull"
     exit 1
