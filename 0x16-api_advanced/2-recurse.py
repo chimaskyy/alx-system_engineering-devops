@@ -38,4 +38,3 @@ def recurse(subreddit, hot_list=[], after=None):
         return len(hot_list)
     else:
         return (None)
-
