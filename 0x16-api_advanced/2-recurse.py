@@ -12,6 +12,8 @@ import requests
 
 def recurse(subreddit, hot_list=[], after=None):
 
+    """Use recursion to get all hot articles from a subreddit"""
+
     if not subreddit:
         return (None)
     url = f"https://www.reddit.com/r/{subreddit}/hot.json"
