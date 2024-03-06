@@ -1,10 +1,16 @@
 #!/usr/bin/python3
+"""
+This script queries the Reddit API and
+prints the titles of the first 10 hot
+posts listed for a given subreddit.
+"""
 
 
 import requests
 
 
 def top_ten(subreddit):
+    """Query Reddit API for a givrn subreddit"""
 
     if subreddit is None:
         print("None")
@@ -24,5 +30,3 @@ def top_ten(subreddit):
 
     except Exception:
         print("None")
-
-
