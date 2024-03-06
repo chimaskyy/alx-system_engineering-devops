@@ -25,8 +25,9 @@ def recurse(subreddit, hot_list=[], after=None):
 
     if response.status_code == 200:
         data = response.json()
+        # Get the 'after' parameter for pagination
         after = data.get('after')
-
+        # If there are more posts to fetch, recursively call the function
         if after:
             recurse(subreddit, hot_list, after)
 
